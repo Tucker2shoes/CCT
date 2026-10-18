@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>No Results — CountyClaimTracker</title>
+  <meta name="description" content="No county-level records found. Start monitoring to never miss county funds — $9.99/month or $79/year." />
+  <style>
+    :root{
+      --navy:#1a2744;
+      --orange:#f97316;
+      --green:#16a34a;
+      --white:#ffffff;
+      --blue:#1e40af;
+      --muted:#6b7280;
+      --card-radius:12px;
+      --max-width:1100px;
+      --shadow: 0 8px 30px rgba(26,39,68,0.08);
+      --cta-height:56px;
+      --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:var(--font-sans);
+      color:#0f172a;
+      background:linear-gradient(180deg,#ffffff 0%, #fbfdff 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    .container{max-width:var(--max-width); margin:20px auto; padding:0 16px;}
+
+    /* Neutral banner */
+    .banner{
+      background:var(--blue);
+      color:var(--white);
+      padding:18px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .banner .left{font-weight:900;}
+    .banner .right{font-weight:800; text-align:right;}
+
+    /* Explanation cards */
+    .grid-2x2{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:18px;}
+    .card{background:var(--white); padding:14px; border-radius:10px; box-shadow:var(--shadow); font-weight:800; color:var(--navy);}
+    .card .emoji{font-size:20px; margin-right:8px;}
+
+    /* State portal */
+    .portal{margin-top:18px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+    .portal .note{color:var(--muted); font-weight:800;}
+    .portal .btn{
+      background:var(--orange);
+      color:var(--white);
+      padding:12px 16px;
+      border-radius:10px;
+      font-weight:900;
+      text-decoration:none;
+      display:inline-block;
+    }
+
+    /* Monitoring subscription */
+    .monitor{margin-top:22px; background:var(--navy); color:var(--white); padding:18px; border-radius:12px; box-shadow:var(--shadow);}
+    .monitor h3{margin:0 0 8px;}
+    .features{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:12px;}
+    .feature{display:flex; gap:8px; align-items:flex-start; font-weight:800;}
+    .price-row{display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap;}
+    .price{font-size:28px; font-weight:900;}
+    .billing-toggle{display:flex; gap:8px; background:rgba(255,255,255,0.06); padding:6px; border-radius:8px;}
+    .billing-toggle button{background:transparent; border:0; color:var(--white); padding:8px 10px; font-weight:800; cursor:pointer;}
+    .billing-toggle .active{background:var(--orange); color:var(--white); border-radius:6px;}
+
+    .monitor .cta{
+      display:inline-block;
+      margin-top:12px;
+      background:var(--orange);
+      color:var(--white);
+      padding:12px 16px;
+      border-radius:10px;
+      font-weight:900;
+      text-decoration:none;
+    }
+    .monitor .small{margin-top:8px; color:rgba(255,255,255,0.9); font-weight:800;}
+
+    /* Referral */
+    .referral{margin-top:18px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+    .referral .box{background:var(--white); padding:12px; border-radius:10px; box-shadow:var(--shadow); font-weight:800;}
+    .share-btn{background:var(--green); color:var(--white); padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:900;}
+
+    /* Search again form */
+    .search-card{margin-top:18px; background:var(--white); padding:14px; border-radius:10px; box-shadow:var(--shadow);}
+    .form-row{display:flex; gap:8px; flex-wrap:wrap;}
+    input[type="text"], select{
+      padding:10px; border-radius:8px; border:1px solid #e6eef6; font-size:15px; flex:1; min-width:140px;
+    }
+    .search-cta{
+      background:var(--orange); color:var(--white); padding:10px 14px; border-radius:8px; font-weight:900; border:0; cursor:pointer;
+    }
+
+    /* Footer */
+    footer{margin-top:22px; padding:18px; text-align:center; color:var(--muted); font-weight:800;}
+
+    /* Responsive */
+    @media (max-width:900px){
+      .grid-2x2{grid-template-columns:1fr;}
+      .features{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="page">
+    <!-- SECTION 1: Neutral Banner -->
+    <div class="banner" id="banner">
+      <div class="left">
+        <div style="font-size:16px;">🔍 <strong id="bannerTitle">SEARCH COMPLETE</strong></div>
+        <div style="font-size:13px; margin-top:6px; color:rgba(255,255,255,0.95);" id="bannerSub">We searched 1,060,436 records. We didn't find any records matching your name in our current database.</div>
+      </div>
+      <div class="right">
+        <div id="bannerNameState" style="font-size:15px;">—</div>
+        <div style="font-size:12px; margin-top:6px;">Filing with the county is always free.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Explanation Cards -->
+    <div class="grid-2x2" aria-live="polite">
+      <div class="card"><span class="emoji">📍</span><strong>Your State May Not Be Covered Yet</strong><div style="color:var(--muted); margin-top:8px; font-weight:700;">We currently cover county-level records for 21 states and add more monthly.</div></div>
+      <div class="card"><span class="emoji">📅</span><strong>New Records Are Added Monthly</strong><div style="color:var(--muted); margin-top:8px; font-weight:700;">We update our database regularly — monitoring helps catch new matches.</div></div>
+      <div class="card"><span class="emoji">🏛️</span><strong>Check the State Database Free</strong><div style="color:var(--muted); margin-top:8px; font-weight:700;">State treasurers maintain separate unclaimed property sites you can search for free.</div></div>
+      <div class="card"><span class="emoji">💼</span><strong>Reporting Happens Annually</strong><div style="color:var(--muted); margin-top:8px; font-weight:700;">Counties and holders report at different times; matches can appear months later.</div></div>
+    </div>
+
+    <!-- SECTION 3: State Portal Redirect -->
+    <div class="portal" id="portalSection">
+      <div class="note">Search your state's official unclaimed property portal for free:</div>
+      <a id="statePortalBtn" class="btn" href="#" target="_blank" rel="noopener noreferrer">Search Your State Database Free</a>
+      <div style="color:var(--muted); font-weight:800;">Not affiliated with state portals. This search is free.</div>
+    </div>
+
+    <!-- SECTION 4: Monitoring Subscription -->
+    <div class="monitor" id="monitorSection" aria-live="polite">
+      <h3>🔔 NEVER MISS YOUR COUNTY FUNDS</h3>
+      <div style="font-weight:800; color:rgba(255,255,255,0.95);">Start monitoring county records and get notified when new matches appear.</div>
+
+      <div class="features" style="margin-top:12px;">
+        <div class="feature">✅ Email alerts when new county records match</div>
+        <div class="feature">✅ Monthly database updates</div>
+        <div class="feature">✅ Matches prioritized by amount</div>
+        <div class="feature">✅ Direct links to claim portals</div>
+        <div class="feature">✅ Step-by-step claim instructions</div>
+        <div class="feature">✅ Secure payments via Stripe</div>
+        <div class="feature">✅ Delivered to your email</div>
+      </div>
+
+      <div class="price-row">
+        <div class="price" id="monitorPrice">$9.99 <span style="font-size:14px; font-weight:800;">/mo</span></div>
+        <div class="billing-toggle" role="tablist" aria-label="Billing toggle">
+          <button id="mon-monthly" class="active">Monthly</button>
+          <button id="mon-annual">Annual</button>
+        </div>
+      </div>
+
+      <a id="monitorCta" class="cta" href="https://buy.stripe.com/14A6oIdWR4yz1dB7K36c008" target="_blank" rel="noopener noreferrer">START MONITORING — $9.99/month</a>
+      <div class="small">Most users who find county funds find them 6–18 months after their initial search. One-time free search included. Filing with the county is always free.</div>
+    </div>
+
+    <!-- SECTION 5: Referral Offer -->
+    <div class="referral" style="margin-top:18px;">
+      <div class="box">
+        <strong>Know Someone Who Might Have County Funds?</strong>
+        <div style="color:var(--muted); margin-top:8px; font-weight:700;">Earn $10 for every person who pays for a report through your referral link.</div>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <a id="shareBtn" class="share-btn" href="#" role="button">Share</a>
+        <div style="color:var(--muted); font-weight:800;">Referral payments processed after successful delivery.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 6: Search Again Form -->
+    <div class="search-card" style="margin-top:18px;">
+      <form id="retryForm" class="search-form" action="search-results.html" method="get" onsubmit="return false;">
+        <div style="font-weight:900; margin-bottom:8px;">Try another search</div>
+        <div style="color:var(--muted); margin-bottom:10px; font-weight:800;">Try maiden name, middle name, or a family member's name</div>
+        <div class="form-row">
+          <input id="retry-first" name="first" type="text" placeholder="First name" required />
+          <input id="retry-last" name="last" type="text" placeholder="Last name" required />
+          <select id="retry-state" name="state" required>
+            <option value="">State</option>
+            <option value="AL">Alabama</option>
+            <option value="AK">Alaska</option>
+            <option value="AZ">Arizona</option>
+            <option value="AR">Arkansas</option>
+            <option value="CA">California</option>
+            <option value="CO">Colorado</option>
+            <option value="CT">Connecticut</option>
+            <option value="DE">Delaware</option>
+            <option value="DC">District of Columbia</option>
+            <option value="FL">Florida</option>
+            <option value="GA">Georgia</option>
+            <option value="HI">Hawaii</option>
+            <option value="ID">Idaho</option>
+            <option value="IL">Illinois</option>
+            <option value="IN">Indiana</option>
+            <option value="IA">Iowa</option>
+            <option value="KS">Kansas</option>
+            <option value="KY">Kentucky</option>
+            <option value="LA">Louisiana</option>
+            <option value="ME">Maine</option>
+            <option value="MD">Maryland</option>
+            <option value="MA">Massachusetts</option>
+            <option value="MI">Michigan</option>
+            <option value="MN">Minnesota</option>
+            <option value="MS">Mississippi</option>
+            <option value="MO">Missouri</option>
+            <option value="MT">Montana</option>
+            <option value="NE">Nebraska</option>
+            <option value="NV">Nevada</option>
+            <option value="NH">New Hampshire</option>
+            <option value="NJ">New Jersey</option>
+            <option value="NM">New Mexico</option>
+            <option value="NY">New York</option>
+            <option value="NC">North Carolina</option>
+            <option value="ND">North Dakota</option>
+            <option value="OH">Ohio</option>
+            <option value="OK">Oklahoma</option>
+            <option value="OR">Oregon</option>
+            <option value="PA">Pennsylvania</option>
+            <option value="RI">Rhode Island</option>
+            <option value="SC">South Carolina</option>
+            <option value="SD">South Dakota</option>
+            <option value="TN">Tennessee</option>
+            <option value="TX">Texas</option>
+            <option value="UT">Utah</option>
+            <option value="VT">Vermont</option>
+            <option value="VA">Virginia</option>
+            <option value="WA">Washington</option>
+            <option value="WV">West Virginia</option>
+            <option value="WI">Wisconsin</option>
+            <option value="WY">Wyoming</option>
+          </select>
+          <button id="retryBtn" class="search-cta" type="button">Search My Name Free →</button>
+        </div>
+      </form>
+    </div>
+
+    <footer>
+      CountyClaimTracker.com · The only consolidated database of county-level unclaimed property in America · Questions: <a href="mailto:wttapps@outlook.com">wttapps@outlook.com</a> · 760-413-1314
+      <div style="margin-top:8px; color:var(--muted); font-weight:700;">CountyClaimTracker is a private research service. Not affiliated with any government agency. Filing with the county is always free.</div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // Stripe links
+      const STRIPE_LINK_MONTHLY = 'https://buy.stripe.com/14A6oIdWR4yz1dB7K36c008';
+      const STRIPE_LINK_ANNUAL = 'https://buy.stripe.com/28E5kE061aWX7BZc0j6c007';
+
+      // Helper to safely parse sessionStorage
+      function safeJSON(key){
+        try{
+          const raw = sessionStorage.getItem(key);
+          if(!raw) return null;
+          return JSON.parse(raw);
+        }catch(e){
+          return null;
+        }
+      }
+
+      // Read customer info from sessionStorage
+      // Accept keys used earlier: 'cct_search_results', 'cct_results', 'cct_search_results' structure
+      const stored = safeJSON('cct_search_results') || safeJSON('cct_results') || safeJSON('cct_search_results_v1') || null;
+      let customerName = sessionStorage.getItem('cct_name') || sessionStorage.getItem('cct_customer_name') || null;
+      let customerState = null;
+
+      if(stored && stored.query){
+        customerName = customerName || ((stored.query.first||'') + ' ' + (stored.query.last||'')).trim();
+        customerState = stored.query.state || stored.query.stateCode || stored.query.state || null;
+      } else if (stored && Array.isArray(stored.teasers) && stored.teasers.length === 0 && stored.query){
+        customerName = customerName || ((stored.query.first||'') + ' ' + (stored.query.last||'')).trim();
+        customerState = stored.query.state || null;
+      }
+
+      // If no stored data, try other keys
+      if(!customerState){
+        const meta = safeJSON('cct_search_meta') || null;
+        if(meta && meta.state) customerState = meta.state;
+      }
+
+      // If still no stored data, redirect to index (user likely landed here directly)
+      if(!customerName || !customerState){
+        // But we will still render a generic banner for a moment then redirect
+        setTimeout(()=>{ window.location.href = 'index.html'; }, 400);
+      }
+
+      // Populate banner name and state
+      const nameDisplay = customerName ? customerName.toUpperCase() : 'CUSTOMER';
+      const stateDisplay = customerState ? customerState.toUpperCase() : '';
+      const bannerNameState = document.getElementById('bannerNameState');
+      bannerNameState.textContent = `${nameDisplay} IN ${stateDisplay}`;
+
+      // Update banner title to include name
+      const bannerTitle = document.getElementById('bannerTitle');
+      bannerTitle.textContent = `🔍 SEARCH COMPLETE — ${nameDisplay} IN ${stateDisplay}`;
+
+      // State portal mapping (common official portals). Minimal mapping; fallback to search engine if unknown.
+      const statePortals = {
+        'AL':'https://claimit.alabama.gov',
+        'AK':'https://treasury.dor.alaska.gov/Unclaimed-Property',
+        'AZ':'https://azunclaimed.gov',
+        'AR':'https://www.ark.org/unclaimedproperty',
+        'CA':'https://www.sco.ca.gov/upd.html',
+        'CO':'https://www.colorado.gov/pacific/treasury/unclaimed-property',
+        'CT':'https://portal.ct.gov/treasury/unclaimed-property',
+        'DE':'https://unclaimedproperty.delaware.gov',
+        'DC':'https://dc.gov/unclaimedproperty',
+        'FL':'https://www.fltreasurehunt.gov',
+        'GA':'https://dor.georgia.gov/unclaimed-property',
+        'HI':'https://www.hawaii.gov/treasury/unclaimed-property',
+        'ID':'https://treasurer.idaho.gov/unclaimed-property',
+        'IL':'https://icash.illinois.gov',
+        'IN':'https://www.in.gov/treasurer/unclaimed-property',
+        'IA':'https://www.iowaunclaimedproperty.gov',
+        'KS':'https://kansasstatetreasurer.com/unclaimed-property',
+        'KY':'https://treasury.ky.gov/unclaimed-property',
+        'LA':'https://www.treasury.state.la.us/unclaimed-property',
+        'ME':'https://www.maine.gov/treasurer/unclaimed-property',
+        'MD':'https://www.marylandtaxes.gov/unclaimed-property',
+        'MA':'https://www.mass.gov/orgs/office-of-the-state-treasurer',
+        'MI':'https://www.michigan.gov/treasury/0,4679,7-121-1751_5151---,00.html',
+        'MN':'https://www.minnesotatreasurer.com/unclaimed-property',
+        'MS':'https://www.treasury.ms.gov/unclaimed-property',
+        'MO':'https://treasurer.mo.gov/unclaimed-property',
+        'MT':'https://treasurer.mt.gov/unclaimed-property',
+        'NE':'https://treasurer.nebraska.gov/unclaimed-property',
+        'NV':'https://nevadatreasurer.gov/unclaimed-property',
+        'NH':'https://www.nh.gov/treasury/unclaimed-property',
+        'NJ':'https://www.unclaimedproperty.nj.gov',
+        'NM':'https://www.tax.newmexico.gov/unclaimed-property',
+        'NY':'https://www.osc.state.ny.us/unclaimed-funds',
+        'NC':'https://www.nctreasurer.com/Unclaimed-Property',
+        'ND':'https://www.nd.gov/treasurer/unclaimed-property',
+        'OH':'https://www.com.ohio.gov/unclaimedfunds',
+        'OK':'https://www.ok.gov/treasurer/Unclaimed_Property/index.html',
+        'OR':'https://www.oregon.gov/treasury/Pages/Unclaimed-Property.aspx',
+        'PA':'https://www.patreasury.gov/unclaimed-property',
+        'RI':'https://treasury.ri.gov/unclaimed-property',
+        'SC':'https://treasurer.sc.gov/unclaimed-property',
+        'SD':'https://sdtreasurer.gov/unclaimed-property',
+        'TN':'https://treasury.tn.gov/Unclaimed-Property',
+        'TX':'https://claimittexas.org',
+        'UT':'https://treasurer.utah.gov/unclaimed-property',
+        'VT':'https://www.vermonttreasurer.gov/unclaimed-property',
+        'VA':'https://www.trs.virginia.gov/unclaimed-property',
+        'WA':'https://www.tre.wa.gov/unclaimed-property',
+        'WV':'https://treasury.wv.gov/unclaimed-property',
+        'WI':'https://statetreasury.wi.gov/Pages/UnclaimedProperty.aspx',
+        'WY':'https://treasurer.wyo.gov/unclaimed-property'
+      };
+
+      // Determine portal URL
+      const stateCode = (customerState || '').toString().trim().toUpperCase();
+      const portalBtn = document.getElementById('statePortalBtn');
+      if(statePortals[stateCode]){
+        portalBtn.href = statePortals[stateCode];
+        portalBtn.textContent = `Search ${stateCode} State Database Free`;
+      } else {
+        // fallback: search engine query
+        const q = encodeURIComponent((customerState || '') + ' unclaimed property search');
+        portalBtn.href = `https://www.google.com/search?q=${q}`;
+        portalBtn.textContent = 'Search Your State Database Free';
+      }
+
+      // Monitoring billing toggle behavior
+      const monMonthlyBtn = document.getElementById('mon-monthly');
+      const monAnnualBtn = document.getElementById('mon-annual');
+      const monitorPriceEl = document.getElementById('monitorPrice');
+      const monitorCta = document.getElementById('monitorCta');
+
+      function setBilling(mode){
+        if(mode === 'monthly'){
+          monMonthlyBtn.classList.add('active');
+          monAnnualBtn.classList.remove('active');
+          monitorPriceEl.innerHTML = '$9.99 <span style="font-size:14px; font-weight:800;">/mo</span>';
+          monitorCta.href = STRIPE_LINK_MONTHLY;
+          monitorCta.textContent = 'START MONITORING — $9.99/month';
+        } else {
+          monMonthlyBtn.classList.remove('active');
+          monAnnualBtn.classList.add('active');
+          monitorPriceEl.innerHTML = '$79 <span style="font-size:14px; font-weight:800;">/yr</span>';
+          monitorCta.href = STRIPE_LINK_ANNUAL;
+          monitorCta.textContent = 'START MONITORING — $79/year';
+        }
+      }
+
+      monMonthlyBtn.addEventListener('click', function(){ setBilling('monthly'); });
+      monAnnualBtn.addEventListener('click', function(){ setBilling('annual'); });
+
+      // Default to monthly
+      setBilling('monthly');
+
+      // Referral share button: uses Web Share API if available, otherwise copies link
+      const shareBtn = document.getElementById('shareBtn');
+      shareBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        const shareText = `Check CountyClaimTracker — search for unclaimed county funds. Try it: https://CountyClaimTracker.com`;
+        if(navigator.share){
+          navigator.share({ title: 'CountyClaimTracker', text: shareText, url: 'https://CountyClaimTracker.com' }).catch(()=>{});
+        } else if(navigator.clipboard){
+          navigator.clipboard.writeText(shareText).then(()=>{ alert('Share link copied to clipboard'); }).catch(()=>{ alert('Copy failed — please share manually'); });
+        } else {
+          prompt('Copy and share this link:', 'https://CountyClaimTracker.com');
+        }
+      });
+
+      // Search again form behavior: intercept and call performSearch-like redirect to search-results.html
+      const retryBtn = document.getElementById('retryBtn');
+      retryBtn.addEventListener('click', function(){
+        const first = document.getElementById('retry-first').value.trim();
+        const last = document.getElementById('retry-last').value.trim();

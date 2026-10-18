@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CountyClaimTracker.com — The Consolidated County Unclaimed Property Database</title>
+  <meta name="description" content="Most people know about state unclaimed property. Almost nobody knows that counties hold their own separate pool — and unlike state funds, county funds expire.">
+  <meta property="og:title" content="CountyClaimTracker.com — The Consolidated County Unclaimed Property Database">
+  <meta property="og:description" content="Most people know about state unclaimed property. Almost nobody knows that counties hold their own separate pool — and unlike state funds, county funds expire.">
+
+  <style>
+    :root {
+      --navy: #1a2744;
+      --navy-dark: #0f172a;
+      --navy-light: #243456;
+      --orange: #f97316;
+      --orange-hover: #ea580c;
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --gray-bg: #f8fafc;
+      --gray-card: #ffffff;
+      --gray-border: #e2e8f0;
+      --gray-text: #64748b;
+      --text-dark: #0f172a;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--gray-bg);
+      color: var(--text-dark);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Announcement Bar */
+    #announcement-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 44px;
+      background-color: var(--orange);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1.25rem;
+      z-index: 1000;
+      font-size: 0.875rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
+    }
+
+    #announcement-bar a {
+      color: var(--white);
+      text-decoration: underline;
+      margin-left: 0.5rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    #announcement-close {
+      position: absolute;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      opacity: 0.85;
+    }
+
+    #announcement-close:hover {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    body.has-announcement {
+      padding-top: 44px;
+    }
+
+    /* Sticky Navigation */
+    header.sticky-nav {
+      position: sticky;
+      top: 44px;
+      z-index: 900;
+      background-color: var(--white);
+      border-bottom: 1px solid var(--gray-border);
+      box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.04);
+      transition: top 0.2s ease;
+    }
+
+    body:not(.has-announcement) header.sticky-nav {
+      top: 0;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .logo-text {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -0.03em;
+    }
+
+    .logo-dot {
+      color: var(--orange);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 1.75rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #334155;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--orange);
+    }
+
+    .btn-nav-search {
+      background-color: var(--orange);
+      color: var(--white);
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+    }
+
+    .btn-nav-search:hover {
+      background-color: var(--orange-hover);
+      transform: translateY(-1px);
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: var(--navy);
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--white);
+        border-bottom: 1px solid var(--gray-border);
+        padding: 1.25rem 1.5rem;
+        gap: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-links.mobile-open {
+        display: flex;
+      }
+
+      .hamburger {
+        display: block;
+      }
+    }
+
+    /* Container Utility */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(135deg, #111a2f 0%, #1a2744 50%, #203158 100%);
+      color: var(--white);
+      padding: 4.5rem 0 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: "";
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.12) 0%, rgba(249, 115, 22, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+
+    .pill-orange {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background-color: rgba(249, 115, 22, 0.2);
+      border: 1px solid rgba(249, 115, 22, 0.6);
+      color: #ffedd5;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-title {
+      font-size: 48px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      color: var(--white);
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: #cbd5e1;
+      line-height: 1.65;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero-title {
+        font-size: 34px;
+      }
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+    }
+
+    /* Search Card */
+    .search-card {
+      background: var(--white);
+      border-radius: 1.25rem;
+      padding: 2rem;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25);
+      color: var(--text-dark);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .search-form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .search-form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      height: 48px;
+      padding: 0 1rem;
+      border: 1.5px solid var(--gray-border);
+      border-radius: 0.65rem;
+      font-size: 0.95rem;
+      background-color: #f8fafc;
+      color: var(--text-dark);
+      transition: all 0.15s ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--orange);
+      background-color: var(--white);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+    }
+
+    .btn-search-hero {
+      width: 100%;
+      height: 56px;
+      background-color: var(--orange);
+      color: var(--white);
+      font-size: 1.15rem;
+      font-weight: 800;
+      border-radius: 0.75rem;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35);
+      transition: all 0.15s ease;
+      margin-top: 1rem;
+    }
+
+    .btn-search-hero:hover {
+      background-color: var(--orange-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(249, 115, 22, 0.45);
+    }
+
+    .search-card-footer {
+      margin-top: 1rem;
+      font-size: 0.825rem;
+      color: #64748b;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .search-card-footer strong {
+      color: #0f172a;
+    }
+
+    /* Recently Found Card (Desktop) */
+    .recent-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      color: var(--white);
+    }
+
+    @media (max-width: 980px) {
+      .recent-card {
+        display: none;
+      }
+    }
+
+    .recent-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .recent-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #22c55e;
+      box-shadow: 0 0 10px #22c55e;
+    }
+
+    .recent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .recent-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0.85rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .recent-item .name {
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .recent-item .county {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .recent-item .amount {
+      font-weight: 800;
+      color: #4ade80;
+      font-size: 1.05rem;
+    }
+
+    /* Trust Bar (6 signals) */
+    .trust-bar {
+      background-color: var(--white);
+      border-bottom: 1px solid var(--gray-border);
+      padding: 1.25rem 0;
+    }
+
+    .trust-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .trust-icon {
+      color: var(--green);
+      font-size: 1.15rem;
+    }
+
+    @media (max-width: 768px) {
+      .trust-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+    }
+
+    /* Stats Bar (3 numbers) */
+    .stats-bar {
+      background-color: #f1f5f9;
+      border-bottom: 1px solid var(--gray-border);
+      padding: 2.5rem 0;
+      text-align: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .stat-box .number {
+      font-size: 2.75rem;
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-box .label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-top: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .stat-box .number {
+        font-size: 2.25rem;
+      }
+    }
+
+    /* How It Works (3 steps) */
+    .section {
+      padding: 5rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .section-tag {
+      color: var(--orange);
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 2.25rem;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: #64748b;
+      margin-top: 0.75rem;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      position: relative;
+    }
+
+    @media (max-width: 840px) {
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+      }
+    }
+
+    .step-card {
+      background: var(--white);
+      border: 1px solid var(--gray-border);
+      border-radius: 1.25rem;
+      padding: 2.25rem 1.75rem;
+      text-align: center;
+      box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .step-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .step-icon-wrapper {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.5rem;
+      background: #fff7ed;
+      border: 2px solid #fed7aa;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    .step-number {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.35rem;
+    }
+
+    .step-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 0.75rem;
+    }
+
+    .step-desc {
+      font-size: 0.95rem;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    /* Urgency Section (Orange Background) */
+    .urgency-section {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: var(--white);
+      padding: 5rem 0;
+    }
+
+    .urgency-title {
+      text-align: center;
+      font-size: 2.4rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .urgency-sub {
+      text-align: center;
+      font-size: 1.15rem;
+      max-width: 750px;
+      margin: 0 auto 3rem;
+      color: #ffedd5;
+    }
+
+    .comparison-container {
+      background: var(--white);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      margin-bottom: 3.5rem;
+      color: var(--text-dark);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .comparison-table th {
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .comparison-table th.col-state {
+      background-color: #f1f5f9;
+      color: #475569;
+      width: 50%;
+    }
+
+    .comparison-table th.col-county {
+      background-color: #fff7ed;
+      color: #c2410c;
+      width: 50%;
+    }
+
+    .comparison-table td.col-state {
+      background-color: #ffffff;
+      color: #475569;
+    }
+
+    .comparison-table td.col-county {
+      background-color: #fffaf5;
+      font-weight: 700;
+      color: #9a3412;
+    }
+
+    @media (max-width: 640px) {
+      .urgency-title {
+        font-size: 1.85rem;
+      }
+      .comparison-table th, .comparison-table td {
+        padding: 0.85rem 1rem;
+        font-size: 0.85rem;
+      }
+    }
+
+    .urgency-form-wrapper {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* What's In Your Report */
+    .report-section {
+      background-color: var(--white);
+      padding: 5rem 0;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .report-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .checklist-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .check-icon {
+      color: var(--green);
+      font-size: 1.15rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-top: 0.15rem;
+      flex-shrink: 0;
+    }
+
+    .report-placeholder-card {
+      background: linear-gradient(145deg, #f8fafc 0%, #edf2f7 100%);
+      border: 2px dashed #cbd5e1;
+      border-radius: 1.25rem;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    .report-mockup {
+      background: var(--white);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      border: 1px solid var(--gray-border);
+      filter: blur(2.5px);
+      user-select: none;
+      pointer-events: none;
+      opacity: 0.85;
+      text-align: left;
+    }
+
+    .report-mockup-header {
+      border-bottom: 2px solid #1a2744;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .report-mockup-line {
+      height: 12px;
+      background-color: #cbd5e1;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .report-overlay-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--navy);
+      color: var(--white);
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      font-size: 0.95rem;
+      font-weight: 800;
+      width: 80%;
+      z-index: 10;
+    }
+
+    /* Pricing Section */
+    .pricing-section {
+      background-color: #f8fafc;
+      padding: 5.5rem 0;
+    }
+
+    .pricing-tabs-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .pricing-tabs {
+      background: #e2e8f0;
+      padding: 0.35rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      gap: 0.25rem;
+    }
+
+    .tab-btn {
+      padding: 0.65rem 2rem;
+      border-radius: 9999px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: transparent;
+      color: #475569;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background-color: var(--navy);
+      color: var(--white);
+      box-shadow: 0 4px 10px rgba(26, 39, 68, 0.25);
+    }
+
+    .pricing-cards-container {
+      display: none;
+    }
+
+    .pricing-cards-container.active-view {
+      display: grid;
+    }
+
+    /* 4 Individual Cards Grid */
+    #individual-cards {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+
+    /* 3 Business Cards Grid */
+    #business-cards {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      max-width: 1050px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1100px) {
+      #individual-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      #individual-cards, #business-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .price-card {
+      background: var(--white);
+      border-radius: 1.25rem;
+      border: 1.5px solid var(--gray-border);
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+    }
+
+    .price-card:hover {
+      box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Card Variations */
+    .price-card.featured {
+      border: 2.5px solid var(--orange);
+      transform: scale(1.02);
+      box-shadow: 0 12px 30px rgba(249, 115, 22, 0.15);
+      z-index: 10;
+    }
+
+    .price-card.featured .popular-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--orange);
+      color: var(--white);
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem;
+      border-radius: 9999px;
+      box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
+    }
+
+    .price-card.dark-navy {
+      background-color: var(--navy);
+      border-color: var(--navy);
+      color: var(--white);
+    }
+
+    .price-card.dark-navy .card-title,
+    .price-card.dark-navy .price-num {
+      color: var(--white);
+    }
+
+    .price-card.dark-navy .card-desc,
+    .price-card.dark-navy .feature-list li {
+      color: #cbd5e1;
+    }
+
+    .price-card.dashed-orange {
+      border: 2px dashed var(--orange);
+      background-color: #fffaf5;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 0.35rem;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: #64748b;
+      min-height: 40px;
+      margin-bottom: 1.25rem;
+    }
+
+    .price-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .price-card.dark-navy .price-wrap {
+      border-bottom-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .price-currency {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .price-num {
+      font-size: 2.75rem;
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .price-sub {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .price-card.dark-navy .price-sub {
+      color: #94a3b8;
+    }
+
+    /* Billing toggle inside Claim Watch */
+    .mini-toggle-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .mini-toggle-wrap button {
+      border: 1px solid #cbd5e1;
+      background: var(--white);
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mini-toggle-wrap button.active {
+      background: var(--orange);
+      color: var(--white);
+      border-color: var(--orange);
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .feature-list li {
+      font-size: 0.875rem;
+      color: #334155;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .feature-list li .check {
+      color: var(--green);
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .price-card.dark-navy .feature-list li .check {
+      color: #4ade80;
+    }
+
+    .btn-buy {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 0.85rem 1rem;
+      border-radius: 0.65rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+    }
+
+    .btn-buy-primary {
+      background-color: var(--orange);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+    }
+
+    .btn-buy-primary:hover {
+      background-color: var(--orange-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-buy-secondary {
+      background-color: #f1f5f9;
+      color: var(--navy);
+      border: 1px solid var(--gray-border);
+    }
+
+    .btn-buy-secondary:hover {
+      background-color: #e2e8f0;
+    }
+
+    .btn-buy-white {
+      background-color: var(--white);
+      color: var(--navy);
+    }
+
+    .btn-buy-white:hover {
+      background-color: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    .pricing-guarantee-note {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    /* Testimonials (3 cards, 5 stars) */
+    .testimonial-section {
+      background-color: var(--white);
+      padding: 5rem 0;
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    @media (max-width: 840px) {
+      .testimonial-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .testimonial-card {
+      background: #f8fafc;
+      border: 1px solid var(--gray-border);
+      border-radius: 1.25rem;
+      padding: 2rem 1.75rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .stars {
+      color: #f59e0b;
+      font-size: 1.15rem;
+      margin-bottom: 1rem;
+      letter-spacing: 0.1em;
+    }
+
+    .testimonial-quote {
+      font-size: 1rem;
+      color: #334155;
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .testimonial-author {
+      font-weight: 800;
+      color: var(--navy);
+      font-size: 0.95rem;
+    }
+
+    .testimonial-location {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    /* FAQ (8 items accordion) */
+    .faq-section {
+      background-color: #f8fafc;
+      padding: 5.5rem 0;
+    }
+
+    .faq-accordion {
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .faq-item {
+      background: var(--white);
+      border: 1px solid var(--gray-border);
+      border-radius: 0.85rem;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .faq-item.open {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .faq-question {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 1.25rem 1.5rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .faq-toggle-icon {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--orange);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .faq-item.open .faq-toggle-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 0 1.5rem 1.5rem;
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.65;
+    }
+
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+
+    /* Final CTA (Navy) */
+    .final-cta-section {
+      background: linear-gradient(135deg, #111a2f 0%, #1a2744 50%, #203158 100%);
+      color: var(--white);
+      padding: 5.5rem 0;
+      text-align: center;
+    }
+
+    .final-cta-title {
+      font-size: 2.75rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .final-cta-sub {
+      font-size: 1.15rem;
+      color: #cbd5e1;
+      max-width: 650px;
+      margin: 0 auto 3rem;
+    }
+
+    .final-search-wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    /* Footer */
+    footer.main-footer {
+      background-color: var(--navy-dark);
+      color: #94a3b8;
+      padding: 4.5rem 0 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.875rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    .footer-logo {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: var(--white);
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-tagline {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      max-width: 380px;
+      color: #cbd5e1;
+    }
+
+    .footer-heading {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .footer-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    .footer-contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      color: #cbd5e1;
+    }
+
+    .footer-contact-info a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-contact-info a:hover {
+      color: var(--orange);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #64748b;
+    }
+
+    .footer-disclaimer {
+      max-width: 800px;
+      margin: 0.5rem auto 0;
+    }
+  </style>
+</head>
+<body class="has-announcement">
+
+  <!-- 1. ANNOUNCEMENT BAR (fixed top, orange #f97316) -->
+  <aside id="announcement-bar" role="banner" aria-label="Urgent County Notice">
+    <div>
+      ⚠️ County funds expire — state funds don't. Search free before your deadline passes.
+      <a href="#search-form" class="announcement-cta">Search Now →</a>
+    </div>
+    <button id="announcement-close" aria-label="Dismiss Announcement">&times;</button>
+  </aside>
+
+  <!-- 2. STICKY NAVIGATION -->
+  <header class="sticky-nav" role="navigation">
+    <div class="nav-container">
+      <a href="#" class="logo-container">
+        <span class="logo-text">CountyClaimTracker<span class="logo-dot">.com</span></span>
+      </a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#search-form">Search</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#urgency">Urgency</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <a href="#search-form" class="btn-nav-search">Search Free</a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. HERO SECTION (navy gradient background) -->
+  <section class="hero-section" id="home">
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Left Side: Copy and Search Form -->
+        <div>
+          <div class="pill-orange">
+            <span>🛡️</span> FREE SEARCH · PAY ONLY IF WE FIND SOMETHING
+          </div>
+          <h1 class="hero-title">
+            County Governments Are Holding Your Money
+          </h1>
+          <p class="hero-subtitle">
+            Most people know about state unclaimed property. Almost nobody knows that counties hold their own separate pool — stale checks, property tax refunds, surplus funds from tax sales. And unlike state funds, county funds expire.
+          </p>
+
+          <!-- Search form (white card, shadow) -->
+          <div class="search-card" id="search-form">
+            <form action="search-results.html" method="GET" class="main-search-form">
+              <div class="search-form-row">
+                <div class="form-group">
+                  <label class="form-label">First Name</label>
+                  <input type="text" name="first" class="form-input" placeholder="e.g. Robert" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Last Name</label>
+                  <input type="text" name="last" class="form-input" placeholder="e.g. Davis" required>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.5rem;">
+                <label class="form-label">State</label>
+                <select name="state" class="form-select" required>
+                  <option value="">Select State</option>
+                  <option value="AL">Alabama (AL)</option>
+                  <option value="AK">Alaska (AK)</option>
+                  <option value="AZ">Arizona (AZ)</option>
+                  <option value="AR">Arkansas (AR)</option>
+                  <option value="CA" selected>California (CA)</option>
+                  <option value="CO">Colorado (CO)</option>
+                  <option value="CT">Connecticut (CT)</option>
+                  <option value="DE">Delaware (DE)</option>
+                  <option value="DC">District of Columbia (DC)</option>
+                  <option value="FL">Florida (FL)</option>
+                  <option value="GA">Georgia (GA)</option>
+                  <option value="HI">Hawaii (HI)</option>
+                  <option value="ID">Idaho (ID)</option>
+                  <option value="IL">Illinois (IL)</option>
+                  <option value="IN">Indiana (IN)</option>
+                  <option value="IA">Iowa (IA)</option>
+                  <option value="KS">Kansas (KS)</option>
+                  <option value="KY">Kentucky (KY)</option>
+                  <option value="LA">Louisiana (LA)</option>
+                  <option value="ME">Maine (ME)</option>
+                  <option value="MD">Maryland (MD)</option>
+                  <option value="MA">Massachusetts (MA)</option>
+                  <option value="MI">Michigan (MI)</option>
+                  <option value="MN">Minnesota (MN)</option>
+                  <option value="MS">Mississippi (MS)</option>
+                  <option value="MO">Missouri (MO)</option>
+                  <option value="MT">Montana (MT)</option>
+                  <option value="NE">Nebraska (NE)</option>
+                  <option value="NV">Nevada (NV)</option>
+                  <option value="NH">New Hampshire (NH)</option>
+                  <option value="NJ">New Jersey (NJ)</option>
+                  <option value="NM">New Mexico (NM)</option>
+                  <option value="NY">New York (NY)</option>
+                  <option value="NC">North Carolina (NC)</option>
+                  <option value="ND">North Dakota (ND)</option>
+                  <option value="OH">Ohio (OH)</option>
+                  <option value="OK">Oklahoma (OK)</option>
+                  <option value="OR">Oregon (OR)</option>
+                  <option value="PA">Pennsylvania (PA)</option>
+                  <option value="RI">Rhode Island (RI)</option>
+                  <option value="SC">South Carolina (SC)</option>
+                  <option value="SD">South Dakota (SD)</option>
+                  <option value="TN">Tennessee (TN)</option>
+                  <option value="TX">Texas (TX)</option>
+                  <option value="UT">Utah (UT)</option>
+                  <option value="VT">Vermont (VT)</option>
+                  <option value="VA">Virginia (VA)</option>
+                  <option value="WA">Washington (WA)</option>
+                  <option value="WV">West Virginia (WV)</option>
+                  <option value="WI">Wisconsin (WI)</option>
+                  <option value="WY">Wyoming (WY)</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-search-hero">
+                Search My Name Free →
+              </button>
+
+              <div class="search-card-footer">
+                ✓ No credit card required &nbsp;•&nbsp; ✓ Results in 60 seconds &nbsp;•&nbsp; ✓ Pay $29 only if we find something
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right side (desktop only): "Recently Found" card showing 5 realistic California examples -->
+        <div class="recent-card">
+          <div class="recent-header">
+            <div class="recent-title">
+              <span class="live-dot"></span>
+              Recently Located County Property
+            </div>
+            <span style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700; text-transform: uppercase;">California Roll</span>
+          </div>
+
+          <div class="recent-list">
+            <div class="recent-item">
+              <div>
+                <div class="name">Robert M. Davis</div>
+                <div class="county">Riverside County • Stale Vendor Warrant</div>
+              </div>
+              <div class="amount">$3,840.50</div>
+            </div>
+
+            <div class="recent-item">
+              <div>
+                <div class="name">Maria Elena Rodriguez</div>
+                <div class="county">Los Angeles County • Tax Collector Refund</div>
+              </div>
+              <div class="amount">$5,420.00</div>
+            </div>
+
+            <div class="recent-item">
+              <div>
+                <div class="name">Pacific Coast Escrow LLC</div>
+                <div class="county">Orange County • Unclaimed Surplus Funds</div>
+              </div>
+              <div class="amount">$18,920.00</div>
+            </div>
+
+            <div class="recent-item">
+              <div>
+                <div class="name">Marcus Aurelius Vance</div>
+                <div class="county">San Diego County • Superior Court Trust</div>
+              </div>
+              <div class="amount">$2,190.25</div>
+            </div>
+
+            <div class="recent-item">
+              <div>
+                <div class="name">Apex Mechanical Solutions</div>
+                <div class="county">Santa Clara County • Overpayment Release</div>
+              </div>
+              <div class="amount">$31,200.00</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem; font-size: 0.75rem; color: #94a3b8; text-align: center;">
+            🔒 All records verified against official Auditor-Controller published rolls.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. TRUST BAR (6 signals) -->
+  <section class="trust-bar">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-item"><span class="trust-icon">🏛️</span> Official Records</div>
+        <div class="trust-item"><span class="trust-icon">🔍</span> Free to Search</div>
+        <div class="trust-item"><span class="trust-icon">🔒</span> Stripe Secure</div>
+        <div class="trust-item"><span class="trust-icon">⚡</span> 60-Second Results</div>
+        <div class="trust-item"><span class="trust-icon">📄</span> Instant Delivery</div>
+        <div class="trust-item"><span class="trust-icon">🔄</span> Updated Monthly</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. STATS BAR (3 numbers) -->
+  <section class="stats-bar">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="number">1,060,436</div>
+          <div class="label">County Records Indexed</div>
+        </div>
+        <div class="stat-box">
+          <div class="number">21</div>
+          <div class="label">States Covered</div>
+        </div>
+        <div class="stat-box">
+          <div class="number">$9.6 Billion</div>
+          <div class="label">Verified Value Located</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. HOW IT WORKS (3 steps) -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Step-By-Step Recovery</div>
+        <h2 class="section-title">How CountyClaimTracker Works</h2>
+        <p class="section-subtitle">
+          Recovering county funds is fast, transparent, and completely risk-free.
+        </p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-icon-wrapper">🔍</div>
+          <div class="step-number">Step 01</div>
+          <h3 class="step-title">Search Free</h3>
+          <p class="step-desc">
+            Type in your name and state. We instantly scan 1,060,436+ county records across 21 states. Zero credit card required to look up your records.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-icon-wrapper">📋</div>
+          <div class="step-number">Step 02</div>
+          <h3 class="step-title">See What We Found</h3>
+          <p class="step-desc">
+            If we locate matching property, we immediately display the uncashed amount, property category, and statutory urgency countdown.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-icon-wrapper">💰</div>
+          <div class="step-number">Step 03</div>
+          <h3 class="step-title">Get Your Report ($29)</h3>
+          <p class="step-desc">
+            Unlock the exact county jurisdiction, auditor office mailing address, direct phone number, and claim packet to recover your funds immediately.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. URGENCY SECTION (orange background) -->
+  <section class="urgency-section" id="urgency">
+    <div class="container">
+      <h2 class="urgency-title">⚠️ County Funds Expire. State Funds Don't.</h2>
+      <p class="urgency-sub">
+        Most citizens assume unclaimed property stays safe forever with the State Controller. In reality, county governments operate under strict local escheatment laws.
+      </p>
+
+      <!-- Two-column comparison table: State Funds vs County Funds -->
+      <div class="comparison-container">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th class="col-state">State Unclaimed Property</th>
+              <th class="col-county">⚠️ County Unclaimed Funds</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-state">Held in perpetuity by State Controller / Treasurer</td>
+              <td class="col-county">Governed by local county codes (e.g. CA Govt Code § 50050)</td>
+            </tr>
+            <tr>
+              <td class="col-state">Never expires — can be claimed decades later</td>
+              <td class="col-county">Permanently expires after statutory 3-year publication period</td>
+            </tr>
+            <tr>
+              <td class="col-state">Single centralized state database website</td>
+              <td class="col-county">Fragmented across 3,000+ separate county auditor websites</td>
+            </tr>
+            <tr>
+              <td class="col-state">No published public newspaper countdown</td>
+              <td class="col-county">Mandatory 45 to 60-day final forfeiture window before seizure</td>
+            </tr>
+            <tr>
+              <td class="col-state">Money stays reserved in your name indefinitely</td>
+              <td class="col-county">Forfeited funds permanently transfer to the County General Fund</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Second search form (same as hero) -->
+      <div class="urgency-form-wrapper">
+        <div class="search-card">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--navy); margin-bottom: 1rem; text-align: center;">
+            Check Your County Records Before The Deadline Passes
+          </h3>
+          <form action="search-results.html" method="GET" class="main-search-form">
+            <div class="search-form-row">
+              <div class="form-group">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first" class="form-input" placeholder="e.g. Robert" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last" class="form-input" placeholder="e.g. Davis" required>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+              <label class="form-label">State</label>
+              <select name="state" class="form-select" required>
+                <option value="">Select State</option>
+                <option value="AL">Alabama (AL)</option>
+                <option value="AK">Alaska (AK)</option>
+                <option value="AZ">Arizona (AZ)</option>
+                <option value="AR">Arkansas (AR)</option>
+                <option value="CA" selected>California (CA)</option>
+                <option value="CO">Colorado (CO)</option>
+                <option value="CT">Connecticut (CT)</option>
+                <option value="DE">Delaware (DE)</option>
+                <option value="DC">District of Columbia (DC)</option>
+                <option value="FL">Florida (FL)</option>
+                <option value="GA">Georgia (GA)</option>
+                <option value="HI">Hawaii (HI)</option>
+                <option value="ID">Idaho (ID)</option>
+                <option value="IL">Illinois (IL)</option>
+                <option value="IN">Indiana (IN)</option>
+                <option value="IA">Iowa (IA)</option>
+                <option value="KS">Kansas (KS)</option>
+                <option value="KY">Kentucky (KY)</option>
+                <option value="LA">Louisiana (LA)</option>
+                <option value="ME">Maine (ME)</option>
+                <option value="MD">Maryland (MD)</option>
+                <option value="MA">Massachusetts (MA)</option>
+                <option value="MI">Michigan (MI)</option>
+                <option value="MN">Minnesota (MN)</option>
+                <option value="MS">Mississippi (MS)</option>
+                <option value="MO">Missouri (MO)</option>
+                <option value="MT">Montana (MT)</option>
+                <option value="NE">Nebraska (NE)</option>
+                <option value="NV">Nevada (NV)</option>
+                <option value="NH">New Hampshire (NH)</option>
+                <option value="NJ">New Jersey (NJ)</option>
+                <option value="NM">New Mexico (NM)</option>
+                <option value="NY">New York (NY)</option>
+                <option value="NC">North Carolina (NC)</option>
+                <option value="ND">North Dakota (ND)</option>
+                <option value="OH">Ohio (OH)</option>
+                <option value="OK">Oklahoma (OK)</option>
+                <option value="OR">Oregon (OR)</option>
+                <option value="PA">Pennsylvania (PA)</option>
+                <option value="RI">Rhode Island (RI)</option>
+                <option value="SC">South Carolina (SC)</option>
+                <option value="SD">South Dakota (SD)</option>
+                <option value="TN">Tennessee (TN)</option>
+                <option value="TX">Texas (TX)</option>
+                <option value="UT">Utah (UT)</option>
+                <option value="VT">Vermont (VT)</option>
+                <option value="VA">Virginia (VA)</option>
+                <option value="WA">Washington (WA)</option>
+                <option value="WV">West Virginia (WV)</option>
+                <option value="WI">Wisconsin (WI)</option>
+                <option value="WY">Wyoming (WY)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-search-hero">
+              Search My Name Free →
+            </button>
+
+            <div class="search-card-footer">
+              ✓ No credit card required &nbsp;•&nbsp; ✓ Results in 60 seconds &nbsp;•&nbsp; ✓ Pay $29 only if we find something
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. WHAT'S IN YOUR REPORT (12-item checklist in 2 columns + blurred sample) -->
+  <section class="report-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Complete Intelligence</div>
+        <h2 class="section-title">What's In Your Official County Report</h2>
+        <p class="section-subtitle">
+          Everything required to verify and claim your funds directly from the holding county agency.
+        </p>
+      </div>
+
+      <div class="report-grid">
+        <!-- 12-item checklist in two columns -->
+        <div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--navy); margin-bottom: 1rem;">
+            12-Point Verified County Discovery Dossier
+          </h3>
+          <p style="font-size: 0.95rem; color: #64748b; line-height: 1.6;">
+            We don't just tell you that money exists — we give you the actionable data required to file your claim immediately before local escheatment windows expire.
+          </p>
+
+          <div class="checklist-grid">
+            <div class="checklist-item"><span class="check">✓</span> Exact County Name & Agency</div>
+            <div class="checklist-item"><span class="check">✓</span> Critical Expiration Date</div>
+            <div class="checklist-item"><span class="check">✓</span> Days Remaining Countdown</div>
+            <div class="checklist-item"><span class="check">✓</span> Original Warrant / Check #</div>
+            <div class="checklist-item"><span class="check">✓</span> Full Verified Dollar Amount</div>
+            <div class="checklist-item"><span class="check">✓</span> Specific Property Type / Origin</div>
+            <div class="checklist-item"><span class="check">✓</span> Physical Auditor Office Address</div>
+            <div class="checklist-item"><span class="check">✓</span> Direct Department Phone Number</div>
+            <div class="checklist-item"><span class="check">✓</span> Governing Statute Reference</div>
+            <div class="checklist-item"><span class="check">✓</span> County Notarization Threshold</div>
+            <div class="checklist-item"><span class="check">✓</span> Required ID & Proof Checklist</div>
+            <div class="checklist-item"><span class="check">✓</span> Ready-to-Mail Packet Instructions</div>
+          </div>
+        </div>
+
+        <!-- Blurred sample report image placeholder -->
+        <div class="report-placeholder-card">
+          <div class="report-mockup">
+            <div class="report-mockup-header">
+              COUNTY AUDITOR-CONTROLLER UNCLAIMED PROPERTY DOSSIER
+            </div>
+            <div class="report-mockup-line" style="width: 85%;"></div>
+            <div class="report-mockup-line" style="width: 65%;"></div>
+            <div class="report-mockup-line" style="width: 90%;"></div>
+            <div style="margin: 1.5rem 0; padding: 1rem; background: #e2e8f0; border-radius: 6px;">
+              <div class="report-mockup-line" style="width: 40%; background: #64748b;"></div>
+              <div class="report-mockup-line" style="width: 75%;"></div>
+              <div class="report-mockup-line" style="width: 50%;"></div>
+            </div>
+            <div class="report-mockup-line" style="width: 95%;"></div>
+            <div class="report-mockup-line" style="width: 80%;"></div>
+            <div class="report-mockup-line" style="width: 60%;"></div>
+          </div>
+
+          <div class="report-overlay-badge">
+            <div style="font-size: 1.25rem; margin-bottom: 0.25rem;">📄 Sample County Report</div>
+            <div style="font-size: 0.8rem; font-weight: 500; opacity: 0.9;">
+              Delivered instantly to your screen and email in PDF &amp; Text format upon unlocking.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. PRICING SECTION -->
+  <section class="pricing-section" id="pricing">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Transparent Flat-Fee Pricing</div>
+        <h2 class="section-title">Zero Percentage Taken. Pay Only Flat Fees.</h2>
+        <p class="section-subtitle">
+          Third-party asset recovery agents charge up to 50% of your money. We charge simple, flat fees so 100% of your claim remains in your pocket.
+        </p>
+      </div>
+
+      <!-- Tab toggle: [Individual] [Business] -->
+      <div class="pricing-tabs-wrapper">
+        <div class="pricing-tabs">
+          <button type="button" class="tab-btn active" id="tabIndividualBtn" onclick="switchPricingTab('individual')">Individual</button>
+          <button type="button" class="tab-btn" id="tabBusinessBtn" onclick="switchPricingTab('business')">Business</button>
+        </div>
+      </div>
+
+      <!-- INDIVIDUAL CARDS (4 cards) -->
+      <div id="individual-cards" class="pricing-cards-container active-view">
+        <!-- Card 1 - Discovery Report: $29 one-time (gray accent) -->
+        <div class="price-card" style="border-top: 4px solid #64748b;">
+          <div>
+            <h3 class="card-title">Discovery Report</h3>
+            <p class="card-desc">Reveals your locked county, deadline, and auditor details.</p>
+            <div class="price-wrap">
+              <span class="price-currency">$</span>
+              <span class="price-num">29</span>
+              <span class="price-sub">one-time</span>
+            </div>
+            <ul class="feature-list">
+              <li><span class="check">✓</span> Exact County Name Revealed</li>
+              <li><span class="check">✓</span> Critical Expiration Date</li>
+              <li><span class="check">✓</span> Holding Department Address</li>
+              <li><span class="check">✓</span> Auditor Direct Phone Number</li>
+              <li><span class="check">✓</span> Instant Screen & Email Access</li>
+            </ul>
+          </div>
+          <a href="https://buy.stripe.com/28E00kg4Z3uv3lJ8O76c00d" class="btn-buy btn-buy-secondary" target="_blank" rel="noopener">
+            Get Discovery ($29) →
+          </a>
+        </div>
+
+        <!-- Card 2 - Claim Ready Package: $149 one-time (FEATURED: orange border, "MOST POPULAR" badge, scale 1.02) -->
+        <div class="price-card featured">
+          <span class="popular-badge">MOST POPULAR</span>
+          <div>
+            <h3 class="card-title">Claim Ready Package</h3>
+            <p class="card-desc">Complete ready-to-mail statutory county filing packet.</p>
+            <div class="price-wrap">
+              <span class="price-currency">$</span>
+              <span class="price-num">149</span>
+              <span class="price-sub">one-time</span>
+            </div>
+            <ul class="feature-list">
+              <li><span class="check">✓</span> <strong>Everything in Discovery ($29)</strong></li>
+              <li><span class="check">✓</span> Pre-Filled Official Claim Form</li>
+              <li><span class="check">✓</span> Formal Statutory Cover Letter</li>
+              <li><span class="check">✓</span> Required Identification Checklist</li>
+              <li><span class="check">✓</span> Verified County Mailing Slip</li>
+              <li><span class="check">✓</span> Printable & Downloadable (.TXT)</li>
+            </ul>
+          </div>
+          <a href="https://buy.stripe.com/6oU7sM9GB2qr1dB4xR6c00b" class="btn-buy btn-buy-primary" target="_blank" rel="noopener">
+            Get Claim Ready ($149) →
+          </a>
+        </div>
+
+        <!-- Card 3 - Full Service Recovery: $499 one-time (dark navy bg) -->
+        <div class="price-card dark-navy">
+          <div>
+            <h3 class="card-title">Full Service Recovery</h3>
+            <p class="card-desc">White-glove recovery specialists handle everything.</p>
+            <div class="price-wrap">
+              <span class="price-currency">$</span>
+              <span class="price-num">499</span>
+              <span class="price-sub">one-time</span>
+            </div>
+            <ul class="feature-list">
+              <li><span class="check">✓</span> Complete Paperwork Preparation</li>
+              <li><span class="check">✓</span> Mobile Notary Coordination</li>
+              <li><span class="check">✓</span> Certified Mail Priority Filing</li>
+              <li><span class="check">✓</span> Auditor Follow-Up & Tracking</li>
+              <li><span class="check">✓</span> 100% of Check Paid Directly to You</li>
+            </ul>
+          </div>
+          <a href="https://buy.stripe.com/cNibJ28Cx8OP09x4xR6c009" class="btn-buy btn-buy-white" target="_blank" rel="noopener">
+            Get Full Service ($499) →
+          </a>
+        </div>
+
+        <!-- Card 4 - Claim Watch: $9.99/mo or $79/yr (dashed orange border) Monthly/Annual toggle on this card only -->
+        <div class="price-card dashed-orange">
+          <div>
+            <h3 class="card-title">Claim Watch</h3>
+            <p class="card-desc">Continuous automated scanning of all new county releases.</p>
+
+            <div class="mini-toggle-wrap">
+              <button type="button" id="cwToggleMonthly" class="active" onclick="toggleClaimWatchPlan('monthly')">Monthly</button>
+              <button type="button" id="cwToggleAnnual" onclick="toggleClaimWatchPlan('annual')">Annual (Save 34%)</button>
+            </div>
+
+            <div class="price-wrap">
+              <span class="price-currency">$</span>
+              <span class="price-num" id="cwPriceNum">9.99</span>
+              <span class="price-sub" id="cwPriceSub">/month</span>
+            </div>
+            <ul class="feature-list">
+              <li><span class="check">✓</span> Scans 1,060,436+ Records Monthly</li>
+              <li><span class="check">✓</span> Instant Notification on New Matches</li>
+              <li><span class="check">✓</span> 45-Day Forfeiture Alerts</li>
+              <li><span class="check">✓</span> Monitor Up to 5 Family Names</li>
+              <li><span class="check">✓</span> Cancel Anytime With One Click</li>
+            </ul>
+          </div>
+          <a id="cwStripeLink" href="https://buy.stripe.com/eVqdRabOJe99cWjfcv6c00c" class="btn-buy btn-buy-secondary" target="_blank" rel="noopener">
+            Activate Watch ($9.99/mo) →
+          </a>
+        </div>
+      </div>
+
+      <!-- BUSINESS CARDS (shown when Business tab clicked) -->
+      <div id="business-cards" class="pricing-cards-container">
+        <!-- Card 1 - Business Discovery: $99 one-time -->
+        <div class="price-card">
+          <div>
+            <h3 class="card-title">Business Discovery</h3>
+            <p class="card-desc">Unlock county warrants & refunds for single LLC or Corp.</p>
+            <div class="price-wrap">
+              <span class="price-currency">$</span>
+              <span class="price-num">99</span>
+              <span class="price-sub">one-time</span>
+            </div>
+            <ul class="feature-list">
+              <li><span class="check">✓</span> Commercial Warrants & Tax Overpayments</li>
+              <li><span class="check">✓</span> County Department & Contact Unlocked</li>
+              <li><span class="check">✓</span> Critical Expiration Timeline</li>
+              <li><span class="check">✓</span> Corporate Payee Verification Check</li>
+            </ul>
+          </div>
+          <a href="https://buy.stripe.com/eVqdRabOJe99cWjfcv6c00c" class="btn-buy btn-buy-secondary" target="_blank" rel="noopener">
+            Get Business Discovery ($99) →
+          </a>
+        </div>
+
+        <!-- Card 2 - Business Claim Ready: $299 one-time (FEATURED) -->
+        <div class="price-card featured">
+          <span class="popular-badge">BUSINESS CHOICE</span>
+          <div>
+            <h3 class="card-title">Business Claim Ready</h3>
+            <p class="card-desc">Full corporate resolution & authorized officer packet.</p>
+            <div class="price-wrap">
+              <span class="price-currency">$</span>
+              <span class="price-num">299</span>
+              <span class="price-sub">one-time</span>
+            </div>
+            <ul class="feature-list">
+              <li><span class="check">✓</span> Complete Discovery Report ($99 value)</li>
+              <li><span class="check">✓</span> Corporate Officer Pre-Filled Form</li>
+              <li><span class="check">✓</span> Statutory Entity Cover Letter</li>
+              <li><span class="check">✓</span> W-9 & EIN Verification Checklist</li>
+              <li><span class="check">✓</span> Priority County Routing Instructions</li>
+            </ul>
+          </div>
+          <a href="https://buy.stripe.com/bJe4gAbOJ2qrcWj2pJ6c00a" class="btn-buy btn-buy-primary" target="_blank" rel="noopener">
+            Get Business Packet ($299) →
+          </a>
+        </div>
+
+        <!-- Card 3 - Business Claim Watch: $29/mo or $199/yr -->
+        <div class="price-card dashed-orange">
+          <div>
+            <h3 class="card-title">Business Claim Watch</h3>
+            <p class="card-desc">Ongoing enterprise monitoring across multiple entities.</p>
+            <div class="price-wrap">
+              <span class="price-currency">$</span>
+              <span class="price-num">29</span>
+              <span class="price-sub">/mo or $199/yr</span>
+            </div>
+            <ul class="feature-list">
+              <li><span class="check">✓</span> Monitor Up to 25 Business Names / DBAs</li>
+              <li><span class="check">✓</span> Monthly Cross-Match on All Warrants</li>
+              <li><span class="check">✓</span> Automated Tax Auction Surplus Alerts</li>
+              <li><span class="check">✓</span> Executive Summary Reports</li>
+            </ul>
+          </div>
+          <a href="https://buy.stripe.com/eVqdRabOJe99cWjfcv6c00c" class="btn-buy btn-buy-secondary" target="_blank" rel="noopener">
+            Activate Business Watch ($29/mo) →
+          </a>
+        </div>
+      </div>
+
+      <div class="pricing-guarantee-note">
+        All plans start with a free search. You only pay after you see your results.
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. TESTIMONIALS (3 cards, 5 stars each) -->
+  <section class="testimonial-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Verified Claimant Experiences</div>
+        <h2 class="section-title">Recovered Before The Clock Ran Out</h2>
+        <p class="section-subtitle">
+          Real property owners and businesses who recovered funds before local forfeiture took effect.
+        </p>
+      </div>
+
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">
+            "Found $1,247 I had no idea about. I checked the California State Controller site twice a year and found nothing. Turns out the county had an uncashed property tax refund sitting there for 2.5 years!"
+          </p>
+          <div class="testimonial-author">M.R.</div>
+          <div class="testimonial-location">Los Angeles County, CA</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">
+            "Found $3,400 in stale checks from an old escrow closing. The $29 discovery report gave me the exact contact person at the county auditor's office. Mailed the packet and received my check in 4 weeks."
+          </p>
+          <div class="testimonial-author">J.T.</div>
+          <div class="testimonial-location">Essex County, NJ</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">
+            "My business had $8,900 waiting from a municipal contractor bond overpayment. We bought the $299 Business Claim Ready package, got the paperwork notarized, and avoided the forfeiture window completely."
+          </p>
+          <div class="testimonial-author">K.L.</div>
+          <div class="testimonial-location">Sacramento County, CA</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. FAQ (8 questions, accordion) -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Frequently Asked Questions</div>
+        <h2 class="section-title">Everything You Need To Know</h2>
+        <p class="section-subtitle">
+          Transparent answers about county unclaimed property, statutory deadlines, and filing rights.
+        </p>
+      </div>
+
+      <div class="faq-accordion">
+        <!-- Q1 -->
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Q1: Is it really free to search?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Yes, 100% free. You can search your name or business across our entire database of 1,060,436+ county records without entering any payment information or credit card. You only pay if we find matching unclaimed money and you choose to unlock the confidential county jurisdiction, expiration deadline, and ready-to-mail claim packet.
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Q2: Why do county funds expire but state funds don't?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            State unclaimed property is governed by Uniform Disposition of Unclaimed Property Acts, where the State Controller acts as a perpetual custodian for owners. County funds, however, are governed by local and county government codes (such as California Government Code §§ 50050–50057). Under these statutes, uncashed warrants and excess funds that remain unclaimed for three years are published in a local newspaper of general circulation. If not claimed within 45 to 60 days following publication, they permanently forfeit directly into the County General Fund and cannot legally be recovered.
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Q3: Can't I search for free myself?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Yes, filing directly with the county is always free. Every county auditor-controller and treasurer accepts claims at zero charge. However, there are over 3,000 counties in the United States, each with its own separate website, scattered PDF warrant lists, and different filing criteria. CountyClaimTracker consolidates these disparate county rolls into a single searchable index, alerts you to critical expiration countdowns, and generates pre-filled claim paperwork so you don't miss statutory cut-offs.
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Q4: What states do you cover?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            We currently index over 1,060,436 verified records across 21 major states, including California, Texas, Florida, New York, New Jersey, Pennsylvania, Ohio, Georgia, North Carolina, Arizona, and others, representing over $9.6 billion in verified value. Our automated crawlers import newly published county warrant batches every month.
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Q5: How do I claim my money after I get the report?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Your report provides the exact county department, contact officer, direct phone number, and physical office address. With our Claim Ready Package ($149), you simply sign the included pre-filled claim form, attach a copy of your government photo ID (and proof of past address), and mail the packet via USPS Certified Mail directly to the county address provided on your routing slip. The county processes your claim and issues a replacement check directly to you in 4 to 8 weeks.
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Q6: What if my name is common?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Our search engine cross-references first names, last names, middle initials, street addresses, and cities to distinguish claimants. When you unlock a report, you receive the full street address on file with the county warrant roll so you can verify that the funds originated from your prior residence, escrow transaction, or property tax bill.
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Q7: Is my information secure?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Yes. All transactions are securely processed by Stripe with bank-grade 256-bit encryption. We never store credit card numbers on our servers. Your search queries and personal identification documents are strictly confidential and never sold to third-party marketers.
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Q8: What if I have a large claim?</span>
+            <span class="faq-toggle-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Whether your claim is $1,000 or $100,000, CountyClaimTracker only charges flat fees ($29 to $499). Unlike traditional recovery investigators and "finder" firms that legally demand 10% to 50% of your money, we never charge a percentage. All recovered county funds go directly to you.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FINAL CTA (navy background) -->
+  <section class="final-cta-section" id="contact">
+    <div class="container">
+      <h2 class="final-cta-title">Your County Funds Are Waiting</h2>
+      <p class="final-cta-sub">
+        Every year, millions of dollars in uncashed county checks forfeit into local general funds. Take 60 seconds to check if your county is holding money in your name.
+      </p>
+
+      <!-- Third search form -->
+      <div class="final-search-wrapper">
+        <div class="search-card">
+          <form action="search-results.html" method="GET" class="main-search-form">
+            <div class="search-form-row">
+              <div class="form-group">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first" class="form-input" placeholder="e.g. Robert" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last" class="form-input" placeholder="e.g. Davis" required>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+              <label class="form-label">State</label>
+              <select name="state" class="form-select" required>
+                <option value="">Select State</option>
+                <option value="AL">Alabama (AL)</option>
+                <option value="AK">Alaska (AK)</option>
+                <option value="AZ">Arizona (AZ)</option>
+                <option value="AR">Arkansas (AR)</option>
+                <option value="CA" selected>California (CA)</option>
+                <option value="CO">Colorado (CO)</option>
+                <option value="CT">Connecticut (CT)</option>
+                <option value="DE">Delaware (DE)</option>
+                <option value="DC">District of Columbia (DC)</option>
+                <option value="FL">Florida (FL)</option>
+                <option value="GA">Georgia (GA)</option>
+                <option value="HI">Hawaii (HI)</option>
+                <option value="ID">Idaho (ID)</option>
+                <option value="IL">Illinois (IL)</option>
+                <option value="IN">Indiana (IN)</option>
+                <option value="IA">Iowa (IA)</option>
+                <option value="KS">Kansas (KS)</option>
+                <option value="KY">Kentucky (KY)</option>
+                <option value="LA">Louisiana (LA)</option>
+                <option value="ME">Maine (ME)</option>
+                <option value="MD">Maryland (MD)</option>
+                <option value="MA">Massachusetts (MA)</option>
+                <option value="MI">Michigan (MI)</option>
+                <option value="MN">Minnesota (MN)</option>
+                <option value="MS">Mississippi (MS)</option>
+                <option value="MO">Missouri (MO)</option>
+                <option value="MT">Montana (MT)</option>
+                <option value="NE">Nebraska (NE)</option>
+                <option value="NV">Nevada (NV)</option>
+                <option value="NH">New Hampshire (NH)</option>
+                <option value="NJ">New Jersey (NJ)</option>
+                <option value="NM">New Mexico (NM)</option>
+                <option value="NY">New York (NY)</option>
+                <option value="NC">North Carolina (NC)</option>
+                <option value="ND">North Dakota (ND)</option>
+                <option value="OH">Ohio (OH)</option>
+                <option value="OK">Oklahoma (OK)</option>
+                <option value="OR">Oregon (OR)</option>
+                <option value="PA">Pennsylvania (PA)</option>
+                <option value="RI">Rhode Island (RI)</option>
+                <option value="SC">South Carolina (SC)</option>
+                <option value="SD">South Dakota (SD)</option>
+                <option value="TN">Tennessee (TN)</option>
+                <option value="TX">Texas (TX)</option>
+                <option value="UT">Utah (UT)</option>
+                <option value="VT">Vermont (VT)</option>
+                <option value="VA">Virginia (VA)</option>
+                <option value="WA">Washington (WA)</option>
+                <option value="WV">West Virginia (WV)</option>
+                <option value="WI">Wisconsin (WI)</option>
+                <option value="WY">Wyoming (WY)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-search-hero">
+              Search My Name Free →
+            </button>
+
+            <div class="search-card-footer">
+              ✓ No credit card required &nbsp;•&nbsp; ✓ Results in 60 seconds &nbsp;•&nbsp; ✓ Pay $29 only if we find something
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. FOOTER (navy background) -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Logo + Tagline -->
+        <div>
+          <a href="#" class="footer-logo">
+            CountyClaimTracker<span style="color: var(--orange);">.com</span>
+          </a>
+          <p class="footer-tagline">
+            The only consolidated database of county-level unclaimed property in America. Tracking over 1,060,436 active county records and statutory forfeiture countdowns across 21 states.
+          </p>
+        </div>
+
+        <!-- Links: Privacy Policy | Terms of Service | Contact -->
+        <div>
+          <h4 class="footer-heading">Legal &amp; Policy</h4>
+          <ul class="footer-links">
+            <li><a href="#faq">Privacy Policy</a></li>
+            <li><a href="#faq">Terms of Service</a></li>
+            <li><a href="#pricing">Fee Transparency</a></li>
+            <li><a href="#urgency">County Statutes Directory</a></li>
+            <li><a href="#contact">Contact Support</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact: wttapps@outlook.com | 760-413-1314 -->
+        <div>
+          <h4 class="footer-heading">Direct Assistance</h4>
+          <div class="footer-contact-info">
+            <div>📞 Direct Phone: <a href="tel:7604131314">760-413-1314</a></div>
+            <div>✉️ Official Inquiries: <a href="mailto:wttapps@outlook.com">wttapps@outlook.com</a></div>
+            <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #94a3b8;">
+              Hours: Mon–Fri 8:00 AM – 5:00 PM PST
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="footer-bottom">
+        <div>
+          &copy; <span id="currentYear">2026</span> CountyClaimTracker.com. All rights reserved.
+        </div>
+        <p class="footer-disclaimer">
+          <strong>Statutory Disclosure &amp; Disclaimer:</strong> CountyClaimTracker.com is a private research service. Not affiliated with any government agency. Filing directly with the county is always free. CountyClaimTracker charges a flat research and automated paperwork preparation fee.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Stripe Links
+    const STRIPE_LINK_29 = "https://buy.stripe.com/28E00kg4Z3uv3lJ8O76c00d";
+    const STRIPE_LINK_149 = "https://buy.stripe.com/6oU7sM9GB2qr1dB4xR6c00b";
+    const STRIPE_LINK_499 = "https://buy.stripe.com/cNibJ28Cx8OP09x4xR6c009";
+    const STRIPE_LINK_MONTHLY = "https://buy.stripe.com/eVqdRabOJe99cWjfcv6c00c";
+    const STRIPE_LINK_ANNUAL = "https://buy.stripe.com/28E5kE061aWX7BZc0j6c007";
+    const STRIPE_LINK_99 = "https://buy.stripe.com/eVqdRabOJe99cWjfcv6c00c";
+    const STRIPE_LINK_299 = "https://buy.stripe.com/bJe4gAbOJ2qrcWj2pJ6c00a";
+
+    // 1. Announcement Bar Dismiss
+    const announcementBar = document.getElementById('announcement-bar');
+    const announcementClose = document.getElementById('announcement-close');
+    if (announcementClose && announcementBar) {
+      announcementClose.addEventListener('click', function() {
+        announcementBar.style.display = 'none';
+        document.body.classList.remove('has-announcement');
+      });
+    }
+
+    // 2. Mobile Hamburger Menu
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburgerBtn && navLinks) {
+      hamburgerBtn.addEventListener('click', function() {
+        navLinks.classList.toggle('mobile-open');
+      });
+    }
+
+    // 3. Smooth scroll for nav links & close mobile menu on click
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          if (navLinks) navLinks.classList.remove('mobile-open');
+          const headerOffset = 80;
+          const elementPosition = targetEl.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+        }
+      });
+    });
+
+    // 4. FAQ Accordion (expand/collapse)
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', function () {
+        const item = this.parentElement;
+        const isOpen = item.classList.contains('open');
+
+        // Optional: close other open items
+        document.querySelectorAll('.faq-item').forEach(other => {
+          if (other !== item) other.classList.remove('open');
+        });
+
+        if (isOpen) {
+          item.classList.remove('open');
+        } else {
+          item.classList.add('open');
+        }
+      });
+    });
+
+    // 5. Pricing Tab Toggle (Individual / Business)
+    function switchPricingTab(type) {
+      const tabIndBtn = document.getElementById('tabIndividualBtn');
+      const tabBizBtn = document.getElementById('tabBusinessBtn');
+      const indCards = document.getElementById('individual-cards');
+      const bizCards = document.getElementById('business-cards');
+
+      if (type === 'individual') {
+        tabIndBtn.classList.add('active');
+        tabBizBtn.classList.remove('active');
+        indCards.classList.add('active-view');
+        bizCards.classList.remove('active-view');
+      } else {
+        tabBizBtn.classList.add('active');
+        tabIndBtn.classList.remove('active');
+        bizCards.classList.add('active-view');
+        indCards.classList.remove('active-view');
+      }
+    }
+
+    // 6. Monthly/Annual toggle for Claim Watch card
+    function toggleClaimWatchPlan(interval) {
+      const btnMonthly = document.getElementById('cwToggleMonthly');
+      const btnAnnual = document.getElementById('cwToggleAnnual');
+      const priceNum = document.getElementById('cwPriceNum');
+      const priceSub = document.getElementById('cwPriceSub');
+      const link = document.getElementById('cwStripeLink');
+
+      if (interval === 'monthly') {
+        btnMonthly.classList.add('active');
+        btnAnnual.classList.remove('active');
+        priceNum.textContent = '9.99';
+        priceSub.textContent = '/month';
+        link.href = STRIPE_LINK_MONTHLY;
+        link.textContent = 'Activate Watch ($9.99/mo) →';
+      } else {
+        btnAnnual.classList.add('active');
+        btnMonthly.classList.remove('active');
+        priceNum.textContent = '79';
+        priceSub.textContent = '/year ($6.58/mo)';
+        link.href = STRIPE_LINK_ANNUAL;
+        link.textContent = 'Activate Annual Watch ($79/yr) →';
+      }
+    }
+
+    // 7. Ensure All Search Forms Submit to search-results.html?first=X&last=Y&state=Z
+    document.querySelectorAll('.main-search-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        // Form standard GET submission handles URL encoding: search-results.html?first=X&last=Y&state=Z
+      });
+    });
+
+    // 8. Auto set current year in footer
+    const yearEl = document.getElementById('currentYear');
+    if (yearEl) {
+      yearEl.textContent = new Date().getFullYear();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Search Results — CountyClaimTracker</title>
+  <meta name="description" content="We found records matching your name. Unlock the full report — $29. Filing with the county is always free." />
+  <style>
+    :root{
+      --navy:#1a2744;
+      --orange:#f97316;
+      --green:#16a34a;
+      --white:#ffffff;
+      --gray:#f8fafc;
+      --muted:#6b7280;
+      --card-radius:12px;
+      --max-width:1100px;
+      --shadow: 0 8px 30px rgba(26,39,68,0.12);
+      --cta-height:64px;
+      --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:var(--font-sans);
+      color:#0f172a;
+      background:linear-gradient(180deg,#ffffff 0%, #fbfdff 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    .container{max-width:var(--max-width); margin:24px auto; padding:0 16px;}
+
+    /* Confirmation banner */
+    .confirm{
+      background:var(--green);
+      color:var(--white);
+      border-radius:12px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .confirm .title{font-weight:900; font-size:18px;}
+    .confirm .subtitle{color:rgba(255,255,255,0.95); font-weight:700;}
+
+    /* Countdown */
+    .countdown{
+      margin-top:16px;
+      background:#f59e0b;
+      color:var(--navy);
+      padding:14px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      font-weight:800;
+    }
+    .countdown .timer{font-size:20px;}
+
+    /* Records list */
+    .records{margin-top:18px; display:flex; flex-direction:column; gap:12px;}
+    .record{
+      background:var(--white);
+      border-radius:10px;
+      padding:14px;
+      box-shadow:var(--shadow);
+      border-left:4px solid var(--orange);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .record .header{display:flex; justify-content:space-between; align-items:center; gap:12px;}
+    .record .header .left{font-weight:900; color:var(--navy);}
+    .badge{background:var(--orange); color:var(--white); padding:6px 10px; border-radius:999px; font-weight:900; font-size:13px;}
+    .record .fields{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    .field{font-weight:800; color:var(--navy); font-size:14px;}
+    .field .label{display:block; font-weight:700; color:var(--muted); font-size:12px; margin-bottom:6px;}
+    .status{color:var(--orange); font-weight:900; margin-top:6px;}
+
+    /* Locked blur bars */
+    .locked{
+      background:linear-gradient(90deg,#eef2ff,#f3f7fb);
+      border-radius:8px;
+      height:36px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:2px;
+      position:relative;
+      overflow:hidden;
+    }
+    .locked .pad{filter:blur(0px); opacity:0.9;}
+    .locked .lock-note{position:absolute; right:10px; font-size:12px; color:var(--muted); font-weight:700;}
+
+    .card-footer{background:#f8fafc; color:var(--muted); padding:10px; border-radius:8px; font-size:13px; font-weight:800;}
+
+    /* Value anchor */
+    .value-anchor{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px;}
+    .value-left{background:#fff; padding:14px; border-radius:10px; box-shadow:var(--shadow);}
+    .value-right{background:#fff; padding:14px; border-radius:10px; box-shadow:var(--shadow); border:2px solid var(--orange);}
+
+    /* Urgency box */
+    .urgency{background:#fff7ed; border:1px solid rgba(249,115,22,0.12); padding:14px; border-radius:10px; margin-top:18px; color:var(--navy);}
+
+    /* Objection handler */
+    .objections{display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;}
+    .ob-card{flex:1; min-width:220px; background:var(--white); padding:14px; border-radius:10px; box-shadow:var(--shadow);}
+
+    /* Unlock CTA */
+    .unlock{
+      margin-top:22px;
+      background:var(--navy);
+      color:var(--white);
+      padding:18px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+    }
+    .unlock h3{margin:0 0 8px; font-size:20px;}
+    .checklist{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;}
+    .check{display:flex; gap:8px; align-items:center; font-weight:800; color:var(--white);}
+
+    .unlock .cta{
+      display:block;
+      width:100%;
+      height:var(--cta-height);
+      background:var(--orange);
+      color:var(--white);
+      border:0;
+      border-radius:10px;
+      font-weight:900;
+      font-size:18px;
+      cursor:pointer;
+      margin-top:14px;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .unlock .small{margin-top:8px; color:rgba(255,255,255,0.9); font-weight:700;}
+
+    /* Trust footer */
+    .trust{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-top:18px; padding:12px; background:var(--white); border-radius:10px; box-shadow:var(--shadow);}
+    .trust .left{display:flex; gap:12px; align-items:center;}
+    .trust .signal{display:flex; gap:8px; align-items:center; font-weight:800; color:var(--muted);}
+
+    /* Sticky mobile bar */
+    .mobile-sticky{
+      display:none;
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:9999;
+      padding:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02));
+    }
+    .mobile-sticky .btn{
+      display:block;
+      width:100%;
+      height:64px;
+      background:var(--orange);
+      color:var(--white);
+      border-radius:10px;
+      font-weight:900;
+      font-size:18px;
+      border:0;
+      cursor:pointer;
+    }
+
+    /* Responsive */
+    @media (max-width:900px){
+      .value-anchor{grid-template-columns:1fr;}
+      .records .record .fields{grid-template-columns:1fr;}
+      .checklist{grid-template-columns:1fr;}
+    }
+    @media (max-width:640px){
+      .mobile-sticky{display:block;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="page">
+    <!-- SECTION 1: Confirmation Banner -->
+    <div class="confirm" id="confirmBanner" role="status" aria-live="polite">
+      <div>
+        <div class="title">✅ <span id="confirmTitle">WE FOUND RECORDS MATCHING</span></div>
+        <div class="subtitle" id="confirmSubtitle">We searched 1,060,436 county records across 21 states.</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:900; font-size:18px;" id="customerNameCaps">—</div>
+        <div style="font-size:12px; color:rgba(255,255,255,0.95); margin-top:6px;">Filing with the county is always free.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Countdown Timer -->
+    <div class="countdown" id="countdown">
+      <div>⏰ <strong>Your search results are reserved for:</strong></div>
+      <div class="timer" id="timerDisplay">15:00</div>
+    </div>
+
+    <!-- SECTION 3: Record Cards -->
+    <div class="records" id="recordsList" aria-live="polite" style="margin-top:12px;">
+      <!-- Record cards injected by JS -->
+    </div>
+
+    <div style="margin-top:8px; text-align:center; color:var(--muted); font-weight:800;">
+      Showing up to 5 records. <a href="#more" id="showMoreLink" style="color:var(--orange); text-decoration:none; font-weight:900;">Show more</a>
+    </div>
+
+    <!-- SECTION 4: Value Anchoring -->
+    <div class="value-anchor">
+      <div class="value-left">
+        <h4 style="margin:0 0 8px;">What you'd pay elsewhere</h4>
+        <ul style="margin:0; padding-left:18px; color:var(--muted); font-weight:800;">
+          <li>Attorney research: $150–$500 / hour</li>
+          <li>Professional finder: 10–15% of recovery</li>
+          <li>DIY (100+ county websites): 4–8 hours</li>
+        </ul>
+      </div>
+      <div class="value-right">
+        <h4 style="margin:0 0 8px;">What you pay here</h4>
+        <ul style="margin:0; padding-left:18px; color:var(--navy); font-weight:900;">
+          <li>One-time research fee: $29</li>
+          <li>Everything to file your claim</li>
+          <li>Delivered in 60 minutes</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 5: Urgency Box -->
+    <div class="urgency" role="alert" aria-live="assertive">
+      <strong>⚠️ IMPORTANT: COUNTY FUNDS EXPIRE</strong>
+      <p style="margin:8px 0 0;">County-held unclaimed funds are subject to county deadlines and retention rules. State-held unclaimed property does not expire the same way. We cannot tell you the specific county deadline until you unlock your full report.</p>
+    </div>
+
+    <!-- SECTION 6: Objection Handler -->
+    <div class="objections">
+      <div class="ob-card">
+        <strong>Can't I search for free myself?</strong>
+        <p style="margin:8px 0 0; color:var(--muted);">You can try, but county records are fragmented across many offices and formats. We aggregate official county records into one report so you don't miss deadlines.</p>
+      </div>
+      <div class="ob-card">
+        <strong>How do I know this is real?</strong>
+        <p style="margin:8px 0 0; color:var(--muted);">We source records from official county documents and public records. Our reports include source references and claim portal links after unlocking.</p>
+      </div>
+      <div class="ob-card">
+        <strong>What if the amount is small?</strong>
+        <p style="margin:8px 0 0; color:var(--muted);">You won't know the exact amount until you unlock. Our $29 flat fee is charm-priced and often far less than hiring help or spending hours searching.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 7: Unlock CTA -->
+    <div class="unlock" id="unlockBox">
+      <h3>UNLOCK YOUR FULL REPORT</h3>
+      <div style="font-weight:800; color:rgba(255,255,255,0.95);">What you get when you unlock</div>
+      <div class="checklist" aria-hidden="false">
+        <div class="check">✅ Exact dollar amount for each record</div>
+        <div class="check">✅ Name of the entity holding your funds</div>
+        <div class="check">✅ Direct link to the claim portal</div>
+        <div class="check">✅ Direct link to the claim form PDF</div>
+        <div class="check">✅ Your specific expiration deadline</div>
+        <div class="check">✅ Whether a notary is required</div>
+        <div class="check">✅ Complete required documents checklist</div>
+        <div class="check">✅ Step-by-step claim instructions</div>
+      </div>
+
